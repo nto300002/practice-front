@@ -180,5 +180,64 @@ fruit.unshift('すいか')
 // 配列の最初の要素を削除する
 fruit.shift()
 // 配列を逆順にする
+let fruit = ["りんご","みかん","いちご","もも"]
 fruit.reverse()
 console.log(fruit)
+// 配列から"みかん"のindexを取得する
+fruit.indexOf('みかん')
+// 配列の2番目の要素と3番目の要素からなる配列を作る
+let fruit = ["りんご","みかん","いちご","もも"]
+fruit.splice(1,2)
+fruit.slice(1,3)
+// 配列の3番目の要素を削除する
+fruit.splice(2,1)
+console.log(fruit)
+// 配列のそれぞれの要素をログ出力する
+let fruit = ["りんご","みかん","いちご","もも"]
+fruit.map(fruit.forEach(element => console.log(element)));
+// 配列のそれぞれの要素を2倍にしてログ出力する
+let nibai2 = [3,43,22,90]
+nibai2.map(nibai2.forEach(element => console.log(element*2)));
+// 配列のそれぞれの要素を3倍に加工した配列を取得する
+let array1 = [23,44,13,880]
+const map1 = array1.map(x => x*2)
+console.log(map1)
+// 配列の中で3文字の要素のみに絞り込んだ配列を取得する
+let array2 = ['23','44','13','880']
+const result = array1.filter(array1 => array1.length === 3);
+console.log(result)
+　const result2 = array1.find(element => element.length === 3) //配列ではない
+　console.log(result2)
+// あいうえお順にソートする
+let fruit = ["りんご","みかん","いちご","もも"]
+fruit.sort();
+// あいうえお順の逆にソートする
+fruit.sort().reverse();
+
+
+
+/**
+ *  id、name、ageプロパティを持つオブジェクト要素の配列を定義する。
+それぞれidは1,2,3、nameは"ジョン","ボブ","マイケル"、ageは15,20,30とする
+ */
+const people2 = [
+  {
+    id:1,
+    name:'ジョン',
+    age:15
+  },
+  {
+    id:2,
+    name:'ボブ',
+    age:20
+  },
+  {
+    id:3,
+    name:'マイケル',
+    age:30
+  }
+]
+// オブジェクト配列の2番目の要素を取得する
+people2[1]
+// オブジェクト配列の3番目の要素のageを取得する
+
