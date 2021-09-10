@@ -240,4 +240,16 @@ const people2 = [
 // オブジェクト配列の2番目の要素を取得する
 people2[1]
 // オブジェクト配列の3番目の要素のageを取得する
-
+console.log(people2[2].age)
+// 配列内のオブジェクトのnameプロパティの文字列が3文字のオブジェクト要素からなる配列を取得する。
+const result = people2.filter(people2 => people2.name.length === 3);
+console.log(result)
+// 配列内のオブジェクトのidプロパティが2のオブジェクト要素を取得する。
+const resultId = people2.find(people2 => people2.id === 2)
+console.log(resultId)
+// 配列内のオブジェクトのidプロパティが1の要素を除いた配列を取得する。
+const result1x =people2.filter(people2 => people2.id > 1)
+console.log(result1x)
+// 配列内のオブジェクトのageプロパティが15の要素を削除する
+const resultSplice = people2.filter(people2 => !(people2.age === 15))
+console.log(resultSplice)
