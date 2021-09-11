@@ -1,6 +1,9 @@
 import React, { useEffect } from 'react';
-import './App.css';
+import './App.scss';
 import { useState } from 'react';
+import {TodoItem} from './components/TodoItem';
+import {AddTodoForm} from './components/AddTodoForm';
+import {EditForm} from './components/EditForm';
 
 export default function App() {
   //todoの状態
@@ -16,7 +19,7 @@ export default function App() {
     }
   });
   //入力された値を追跡するための状態が必要です。
-  const [todo, setTodo] = useState('');
+  const [todo, setTodo] = useState('1');
 
   //編集中であるかどうかを知るためのブーリアン状態（条件に応じて異なる入力を表示することができる 
   const [isEditing, setIsEditing] = useState(false);
@@ -90,39 +93,18 @@ export default function App() {
     <div className='App'>
 
       {isEditing ? ( // 編集中であれば、Todo編集用の入力を表示する
-        <form onSubmit={handleEditFormSubmit}>
-          <h2>Edit Todo</h2>
-          <label htmlFor='editTodo'>Edit todo:</label>
-          {/* 更新入力の値が currentTodo の状態に設定されていることに注意してください
-          {/* handleEditInputChangeが使用されていることにも注目してください */}
-
-          <input 
-            name='editTodo'
-            type='text'
-            placeholder='Edit todo'
-            value={currentTodo.text}
-            onChange={handleEditInputChange}
-          />
-          {/* ここでは、"update "ボタン要素を追加しています - ボタンにtype="submit "を使用すると、handleEditFormSubmit関数を使用して、クリックされたときにフォームが送信されます */}
-          <button type='submit'>Update</button>
-          <button onClick={() => setIsEditing(false)}>Cancel</button>
-          {/* ここでは、"キャンセル "ボタンを追加して、isEditingステートをfalseに戻し、編集モードを解除しています */}
-        </form>
+        <EditForm 
+          currentTodo={currentTodo}
+          setIsEditing={setIsEditing}
+          onEditInputChange={handleEditInputChange}
+          onEditFormSubmit={handleEditFormSubmit}
+        />
       ) : (
-        <form onSubmit={handleFormSubmit}> 
-        {/* 入力要素を作成します-必ず、渡された状態の値を持つvalue prop とonChangeプロップを追加してください。何かが入力されるたびに状態を更新するためのonChangeプロップを追加します。 */}
-        <h2>Add Todo</h2>
-        <label htmlFor='todo'>Add todo: </label>
-          <input 
-          name='todo'
-          type='text'
-          placeholder='Create a new todo'
-          value={todo}
-          onChange={handleInputChange}
-          /> 
-          {/* ここでは、「追加」ボタン要素を追加しています - ボタンにtype="submit "を使用すると、クリックされたときにhandleFormSubmit関数を使ってフォームを送信します */}
-          <button type='submit'>Add</button>
-        </form>
+        <AddTodoForm
+          todo={todo}
+          onAddInputChange={handleAddInputChange}
+          onAddFormSubmit={handleAddFormSubmit}
+        />
       )
 }
 
@@ -130,11 +112,11 @@ export default function App() {
       <ul className='todo-list'>
       {/*1 */}
         {todos.map((todo) =>(
-          <li key={todo.id}>
-            {/*2 */}
-            {todo.text}
-            <button onClick={() => handleEditClick(todo)}>Edit</button>
-            <button onClick={() => handleDeleteClick(todo.id)}>Delete</button></li>
+          <TodoItem 
+            todo={todo}
+            onHandleEditClick={handleEditClick}
+            onHandleDeleteClick={handleDeleteClick}
+          />
         ))}
       </ul>
     </div>
@@ -148,7 +130,6 @@ export default function App() {
 //         これがオブジェクトの配列であることを覚えておいてください。
 //         "text" にアクセスして、表示したい値を取得する必要があります。 
 
-// *2 上記で作成した関数をonClickハンドラとして追加します。
-//           handleDeletClick関数は、削除したいアイテムを知る必要があることを覚えておいてください。
+
   // 参考: https://reactjs.org/docs/hooks-reference.html#lazy-initial-state
   // reference: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify
