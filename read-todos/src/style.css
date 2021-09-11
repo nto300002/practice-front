@@ -1,0 +1,25 @@
+.App {
+  background-color: cadetblue;
+  color: white;
+}
+.todo-list {
+  background-color: aquamarine;
+  color: darkslategrey;
+}
+.likeButton {
+  background-color: rgb(255, 72, 52);
+  color: white;
+  padding: 0.2rem;
+  border-radius: 0.4rem;
+  cursor: pointer;
+}
+button {
+  background-color: rgb(145, 185, 255);
+  color: rgb(40, 38, 38);
+  padding: 0.2rem;
+  border-radius: 0.4rem;
+  cursor: pointer;
+}
+li {
+  color: rgb(55, 55, 55);
+}
