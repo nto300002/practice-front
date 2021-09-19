@@ -1,5 +1,7 @@
 import React, { useState, useMemo,useEffect } from "react";
 import { v4 as uuidv4 } from 'uuid';
+import FilterQuery from './components/FilterQuery';
+import EditForm from './components/EditForm';
 
 export default function App() {
   const initialState = {
@@ -61,31 +63,20 @@ export default function App() {
 	};
 
     //edit
-  function handleEditInputChange(e){
-    setCurrentTodo({...currentTodo, title: e.target.value});
-    console.log(currentTodo);
-  }
 
-    function handleEditFormSubmit(e) {
-    e.preventDefault();
-
-    handleUpdateTodo(currentTodo.id, currentTodo);
-  }
 
   function handleUpdateTodo(id, updatedTask) {
 
-    const updatedItem = tasks.map((item) => {
-      return item.id === id ? updatedTask : item;
+    const updatedItem = tasks.map((tasks) => {
+      return tasks.id === id ? updatedTask : tasks;
     });
 
     setIsEditing(false);
     setTasks(updatedItem);
   }
-  function handleEditClick(item) {
-    // set editing to true
+  function handleEditClick(tasks) {
     setIsEditing(true);
-    // set the currentTodo to the todo item that was clicked
-    setCurrentTodo({ ...item });
+    setCurrentTodo({ ...tasks });
   }
 
   // 検索条件
@@ -155,29 +146,15 @@ export default function App() {
     <div className="wrap">
       <div className="filter-box">
         <div className="input-group">
-        <input
-        type="text"
-        name="title"
-        className="form-input"
-        placeholder="ここで検索"
-        value={filterQuery.title || ""}
-        onChange={handleFilter}
-      />[検索]
+          <FilterQuery tasks={tasks} value={tasks.title || ""} onAddhandleFilter={handleFilter}/>
+
 
        {isEditing ? (
-                <form onSubmit={handleEditFormSubmit}>
-                <h2>Edit Todo</h2>
-                <label htmlFor="editTodo">Edit todo: </label>
-                <input
-                  name="editTodo"
-                  type="text"
-                  placeholder="Edit todo"
-                  value={currentTodo.text}
-                  onChange={handleEditInputChange}
-                />
-                <button type="submit">Update</button>
-                <button onClick={() => setIsEditing(false)}>Cancel</button>
-              </form>
+         //未完成
+        <EditForm 
+          currentTodo={currentTodo}
+          setIsEditing={setIsEditing}
+        />
       ):(
       <form onSubmit={handleSubmit}>
         <input value={item} placeholder='Enterを押してください' onChange={handleNewitem} />[追加]

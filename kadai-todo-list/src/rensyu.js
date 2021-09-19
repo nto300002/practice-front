@@ -1,127 +1,148 @@
-import React, { useState, useMemo } from "react";
+import { useEffect, useState } from "react";
+import "./styles.css";
 
 export default function App() {
-  const initialState = {
-    tasks: [
-      {
-        id: 1,
-        title: "title",
-        category: 1,
-        text: ""
-      }
-    ],
-    categories: [
-      {
-        id: 1,
-        title: "未着手"
-      },
-      {
-        id: 2,
-        title: "進行中"
-      },
-      {
-        id: 3,
-        title: "完了"
-      }
-    ]
-  };
-  const [tasks, setTasks] = useState(initialState.tasks);
-  const [categories, setCategories] = useState(initialState.categories);
-  const defaultItem = () => ({ id: 1, title: item, category: 1, text: "" });
-  const [item, setItem] = useState("");
+  const [todos, setTodos] = useState(() => {
+    const savedTodos = localStorage.getItem("todos");
+    if (savedTodos) {
+      return JSON.parse(savedTodos);
+    } else {
+      return [];
+    }
+  });
+  const [todo, setTodo] = useState("");
 
-  const handleNewitem = (e) => setItem(e.target.value);
+  const [isEditing, setIsEditing] = useState(false);
 
-  const handleSubmit = (e) => {
+  const [currentTodo, setCurrentTodo] = useState({});
+
+
+//
+
+
+
+
+
+const handleEditInputChange =(e)=>{
+  setCurrentTodo({...currentTodo, title: e.target.value});
+  console.log(currentTodo);
+}
+
+const handleEditFormSubmit =(e)=> {
+  e.preventDefault();
+
+  handleUpdateTodo(currentTodo.id, currentTodo);
+}
+
+
+
+
+
+
+
+
+//
+
+
+
+
+
+
+  useEffect(() => {
+    localStorage.setItem("todos", JSON.stringify(todos));
+  }, [todos]);
+
+  function handleInputChange(e) {
+    setTodo(e.target.value);
+  }
+
+  function handleEditInputChange(e) {
+    setCurrentTodo({ ...currentTodo, text: e.target.value });
+    console.log(currentTodo);
+  }
+
+  function handleFormSubmit(e) {
     e.preventDefault();
-    if (item === "") return;
-    setTasks((tasks) => [...tasks, defaultItem()]);
-    setItem("");
-  };
 
-  const handleRemoveItem = (index) => {
-    const newItems = [...tasks];
-    newItems.splice(index, 1);
-    setTasks(newItems);
-  };
+    if (todo !== "") {
+      setTodos([
+        ...todos,
+        {
+          id: todos.length + 1,
+          text: todo.trim()
+        }
+      ]);
+    }
 
-  const handleStateIncrease = (index) => {
-    if (index > 3) return;
-    const newTasks = [...tasks];
-    newTasks[index].category++;
-    setTasks(newTasks);
-  };
+    setTodo("");
+  }
 
-  const [filterQuery, setFilterQuery] = useState({});
+  function handleEditFormSubmit(e) {
+    e.preventDefault();
 
-  const filteredTask = useMemo(() => {
-  
-    let tmpTasks = tasks;
+    handleUpdateTodo(currentTodo.id, currentTodo);
+  }
 
-    tmpTasks = tmpTasks.filter((row) => {
-      if (
-        filterQuery.category_id &&
-        row.category !== parseInt(filterQuery.category_id)
-      ) {
-        return false;
-      }
-      return row;
+  function handleDeleteClick(id) {
+    const removeItem = todos.filter((todo) => {
+      return todo.id !== id;
     });
+    setTodos(removeItem);
+  }
 
-    return tmpTasks;
-  }, [filterQuery, tasks]);
+  function handleUpdateTodo(id, updatedTodo) {
+    const updatedItem = todos.map((todo) => {
+      return todo.id === id ? updatedTodo : todo;
+    });
+    setIsEditing(false);
+    setTodos(updatedItem);
+  }
 
-  const handleFilter = (e) => {
-    const { name, value } = e.target;
-    setFilterQuery({ ...filterQuery, [name]: value });
-  };
+  function handleEditClick(todo) {
+    setIsEditing(true);
+    setCurrentTodo({ ...todo });
+  }
 
   return (
-    <div className="wrap">
-      <div className="input-group">
-        <form onSubmit={handleSubmit}>
+    <div className="App">
+      {isEditing ? (
+        <form onSubmit={handleEditFormSubmit}>
+          <h2>Edit Todo</h2>
+          <label htmlFor="editTodo">Edit todo: </label>
           <input
-            value={item}
-            placeholder="Enterを押してください"
-            onChange={handleNewitem}
+            name="editTodo"
+            type="text"
+            placeholder="Edit todo"
+            value={currentTodo.text}
+            onChange={handleEditInputChange}
           />
-          [追加]
+          <button type="submit">Update</button>
+          <button onClick={() => setIsEditing(false)}>Cancel</button>
         </form>
-      </div>
-      <div className="input-group">
-        <div className="selectbox"></div>
-      </div>
+      ) : (
+        <form onSubmit={handleFormSubmit}>
+          <h2>Add Todo</h2>
+          <label htmlFor="todo">Add todo: </label>
+          <input
+            name="todo"
+            type="text"
+            placeholder="Create a new todo"
+            value={todo}
+            onChange={handleInputChange}
+          />
+          <button type="submit">Add</button>
+        </form>
+      )}
 
-      <table>
-        <thead>
-          <tr>
-            <th>[タイトル]</th>
-            <th>[カテゴリー]</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {filteredTask.map((task, index) => {
-            return (
-              <tr key={task.id}>
-                <td>
-                  {task.title}
-                </td>
-                <td>
-                  <span onClick={() => handleStateIncrease(index)}>
-                    {task.category
-                      ? categories.find((c) => c.id === task.category).title
-                      : ""}
-                  </span>
-                </td>
-                <td>
-                <button onClick={() => handleRemoveItem(index)}>削除</button>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+      <ul className="todo-list">
+        {todos.map((todo) => (
+          <li key={todo.id}>
+            {todo.text}
+            <button onClick={() => handleEditClick(todo)}>Edit</button>
+            <button onClick={() => handleDeleteClick(todo.id)}>Delete</button>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
