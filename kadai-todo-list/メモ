@@ -1,158 +1,311 @@
-import React, { useState, useMemo } from 'react';
- 
+
+     if(index > 3)return;
+     const newTasks = [...tasks];
+     newTasks[index].category++;
+     setTasks(newTasks); 
+
+
+
+
+
+
+
+
+
+
+
+
+import React, { useState, useMemo } from "react";
+
 export default () => {
-    const initialState = {
+  const initialState = {
     tasks: [
-        {
-            id: 1,
-            title: '最初のタスク',
-            category: 1
-        },{
-            id: 2,
-            title: '2番目のタスク',
-            category: 2
-        },{
-            id: 3,
-            title: '3番目のタスク',
-            category: 1
-        }
+      {
+        id: 1,
+        title: "最初のタスク",
+        category: 1
+      },
+      {
+        id: 2,
+        title: "2番目のタスク",
+        category: 2
+      },
+      {
+        id: 3,
+        title: "3番目のタスク",
+        category: 1
+      }
     ],
     categories: [
-        {
-            id: 1,
-            title: 'カテゴリー1'
-        },{
-            id: 2,
-            title: 'カテゴリー2'
-        }
+      {
+        id: 1,
+        title: "カテゴリー1"
+      },
+      {
+        id: 2,
+        title: "カテゴリー2"
+      }
     ]
-};
+  };
 
-// タスク
-const [tasks, setTasks] = useState(initialState.tasks);
-// カテゴリー
-const [categories, setCategories] = useState(initialState.categories);
-// 検索条件
-const [filterQuery, setFilterQuery] = useState({});
-// ソート条件
-const [sort, setSort] = useState({});
-const filteredTask = useMemo(() => {
+  // タスク
+  const [tasks, setTasks] = useState(initialState.tasks);
+  // カテゴリー
+  const [categories, setCategories] = useState(initialState.categories);
+  // 検索条件
+  const [filterQuery, setFilterQuery] = useState({});
+  // ソート条件
+  const [sort, setSort] = useState({});
+  const filteredTask = useMemo(() => {
     let tmpTasks = tasks;
- 
+
     // 入力した文字は小文字にする
     const filterTitle = filterQuery.title && filterQuery.title.toLowerCase();
- 
+
     // 絞り込み検索
-    tmpTasks = tmpTasks.filter(row => {
- 
-        // タイトルで絞り込み
-        if (
-            filterQuery.title &&
-            String(row.title).toLowerCase().indexOf(filterTitle) === -1
-        ) {
-            return false;
-        }
- 
-        // カテゴリーで絞り込み
-        if (
-            filterQuery.category_id &&
-            row.category !== parseInt(filterQuery.category_id)
-        ) {
-            return false;
-        }
-        return row;
+    tmpTasks = tmpTasks.filter((row) => {
+      // タイトルで絞り込み
+      if (
+        filterQuery.title &&
+        String(row.title).toLowerCase().indexOf(filterTitle) === -1
+      ) {
+        return false;
+      }
+
+      // カテゴリーで絞り込み
+      if (
+        filterQuery.category_id &&
+        row.category !== parseInt(filterQuery.category_id)
+      ) {
+        return false;
+      }
+      return row;
     });
- 
+
     // ソート
     if (sort.key) {
-        tmpTasks = tmpTasks.sort((a, b) => {
-            a = a[sort.key];
-            b = b[sort.key];
-            return (a === b ? 0 : a > b ? 1 : -1) * sort.order;
-        });
+      tmpTasks = tmpTasks.sort((a, b) => {
+        a = a[sort.key];
+        b = b[sort.key];
+        return (a === b ? 0 : a > b ? 1 : -1) * sort.order;
+      });
     }
- 
-    return tmpTasks;
-}, [filterQuery, sort, tasks]);
 
-// 入力した情報をfilterQueryに入れる
+    return tmpTasks;
+  }, [filterQuery, sort, tasks]);
+
+  // 入力した情報をfilterQueryに入れる
+  const handleFilter = (e) => {
+    const { name, value } = e.target;
+    setFilterQuery({ ...filterQuery, [name]: value });
+  };
+
+  // 選択したカラムをSortに入れる
+  const handleSort = (column) => {
+    if (sort.key === column) {
+      setSort({ ...sort, order: -sort.order });
+    } else {
+      setSort({
+        key: column,
+        order: 1
+      });
+    }
+  };
+
+  return (
+    <div className="wrap">
+      <div className="filter-box">
+        <div className="input-group">
+          <input
+            type="text"
+            name="title"
+            className="form-input"
+            placeholder="タイトル"
+            value={filterQuery.title || ""}
+            onChange={handleFilter}
+          />
+        </div>
+        <div className="input-group">
+          <div className="selectbox">
+            <select
+              name="category_id"
+              value={filterQuery.category_id}
+              onChange={handleFilter}
+            >
+              <option value="">カテゴリー選択</option>
+              {categories.map((item) => {
+                return (
+                  <option key={item.id} value={item.id}>
+                    {item.title}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th onClick={() => handleSort("id")}>ID</th>
+            <th>タイトル</th>
+            <th onClick={() => handleSort("category")}>カテゴリー</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filteredTask.map((task) => {
+            return (
+              <tr key={task.id}>
+                <td>{task.id}</td>
+                <td>{task.title}</td>
+                <td>
+                  {task.category
+                    ? categories.find((c) => c.id === task.category).title
+                    : ""}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
+
+--------------
+
+import React,{useState, useMemo} from 'react';
+import { v4 as uuidv4 } from 'uuid';
+
+function App() {
+
+  const status = [
+    { id: 1,title: '未着手'},
+    {id: 2,title: '進行中'},
+    {id: 3,title: '完了'}
+]
+  const task = [{}]
+
+const defaultItem = () => ({ id: new Date().getTime(), title: "", text: "", status: "未着手" });
+const [items, setItems] = React.useState([defaultItem()]);
+const [length, setLength] = React.useState(1);
+
 const handleFilter = e => {
+  const { name, value } = e.target;
+  setFilterQuery({ ...filterQuery, [name]: value });  
+};
+
+const addItem = () => {
+  if (length > 8) return;
+  setItems((items) => [...items, defaultItem()]);
+  setLength((length) => length + 1);
+};
+const deleteItem = ({ target: { name } }) => {
+  const newItemArray = [...items];
+  newItemArray.splice(Number(name), 1);
+  setItems(newItemArray);
+  setLength((length) => length - 1);
+};
+
+
+
+
+  const [tasks, setTasks] = useState([]);
+  const [statuses, setStatus] = useState(status);
+  
+
+
+  const [filterQuery, setFilterQuery] = useState({});
+
+
+
+  const filteredTask = useMemo(() => {
+    let tmpTasks = items;
+    tmpTasks = tmpTasks.filter(row => {
+
+      // カテゴリーで絞り込み
+      if (
+          filterQuery.status_id &&
+          row.status !== parseInt(filterQuery.status_id)
+      ) {
+          return false;
+      }
+      return row;
+  });
+  return tmpTasks;
+  }, [filterQuery, items]);
+
+
+  
+
+  const handleFilter = e => {
     const { name, value } = e.target;
     setFilterQuery({ ...filterQuery, [name]: value });  
 };
- 
-// 選択したカラムをSortに入れる
-const handleSort = column => {
-    if (sort.key === column) {
-        setSort({ ...sort, order: -sort.order });
-    } else {
-        setSort({
-            key: column,
-            order: 1
-        })
-    }
-};
 
-return (
-    <div className="wrap">
-        <div className="filter-box">
-            <div className="input-group">
-                <input type="text" name="title" className="form-input" placeholder="タイトル"
-                        value={filterQuery.title || ''}
-                        onChange={handleFilter}
-                />
-            </div>
-            <div className="input-group">
-                <div className="selectbox">
-                    <select
-                        name="category_id"
-                        value={filterQuery.category_id}
-                        onChange={handleFilter}
-                    >
-                        <option value="">カテゴリー選択</option>
-                        {
-                            categories.map((item) => {
-                                return (
-                                    <option
-                                        key={item.id}
-                                        value={item.id}>
-                                        {item.title}
-                                    </option>
-                                );
-                            })
-                        }
-                    </select>
-                </div>
-            </div>
-        </div>
- 
-        <table>
-            <thead>
-            <tr>
-                <th onClick={() => handleSort('id')}>ID</th>
-                <th>タイトル</th>
-                <th onClick={() => handleSort('category')}>カテゴリー</th>
-            </tr>
-            </thead>
-            <tbody>
-            {
-                filteredTask.map((task) => {
-                    return(
-                        <tr key={task.id}>
-                            <td>{task.id}</td>
-                            <td>{task.title}</td>
-                            <td>
-                            {
-                                task.category ?
-                                categories.find(c => c.id === task.category).title : ''
-                            }
-                            </td>
-                        </tr>
-                    );
-                })
-            }
-            </tbody>
-        </table>
-    </div>
-);
-};
+
+  return (                
+  <div className="selectbox">
+  
+  <select
+      name="status_id"
+      value={filterQuery.status_id}
+      onChange={handleFilter}
+  >
+      <option value="">全て表示</option>
+      {
+          statuses.map((item) => {
+              return (
+                <>
+                  <option
+                      key={item.id}
+                      value={item.id}>
+                      {item.title}
+                  </option>
+                  
+
+                </>
+              );
+          })
+      }
+  </select>
+  <input type="text" name="a" defaultValue={items.title} placeholder='title'/>
+  <input type="text" name="a" defaultValue={items.title} placeholder='text'/>
+  <button onClick={addItem} disabled={length > 8 ? true : false}>
+        Add item
+      </button>
+      {
+        filteredTask.map((item, index) => {
+          return (
+            <ul key={item.id}>
+              <li>{index + 1}{items.title}          <button onClick={deleteItem} name={index.toString()}>
+            ×
+          </button></li>
+              <span>               
+                {task.status
+                    ? statuses.find((c) => c.id === task.status).title
+                    : ""}
+              </span>
+              
+            </ul>
+          )
+        })
+      }
+</div>
+
+)
+
+}
+
+
+
+
+
+
+
+
+
+export default App
+

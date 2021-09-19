@@ -1,12 +1,12 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo,useEffect } from "react";
 import { v4 as uuidv4 } from 'uuid';
 
-export default () => {
+export default function App() {
   const initialState = {
     tasks: [
       {
         id: uuidv4(),
-        title: "",
+        title: "title",
         category: 1,
         text:''
       },
@@ -14,7 +14,7 @@ export default () => {
     categories: [
       {
         id: 1,
-        title: "着手"
+        title: "未着手"
       },
       {
         id: 2,
@@ -26,10 +26,17 @@ export default () => {
       }
     ]
   };
-  const [tasks, setTasks] = useState(initialState.tasks);
+  
+
   const [categories, setCategories] = useState(initialState.categories);
-  const defaultItem = () => ({id:uuidv4(), title:item, categories:'',text:''})
+  const defaultItem = () => ({id:uuidv4(), title:item, category:1,text:''})
   const [item, setItem] = useState('');
+  const [tasks, setTasks] = useState(initialState.tasks);
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [currentTodo, setCurrentTodo] = useState({});
+
+
 
   const handleNewitem = (e) => setItem(e.target.value);
 
@@ -46,13 +53,50 @@ export default () => {
     setTasks(newItems)
   }
 
+	const handleStateIncrease = (index) => { 
+    setTasks(tasks.map((task, i) => ({
+      ...task,
+      category: i !== index ? task.category : (task.category % 3 + 1)
+    })));
+	};
+
+    //edit
+  function handleEditInputChange(e){
+    setCurrentTodo({...currentTodo, title: e.target.value});
+    console.log(currentTodo);
+  }
+
+    function handleEditFormSubmit(e) {
+    e.preventDefault();
+
+    handleUpdateTodo(currentTodo.id, currentTodo);
+  }
+
+  function handleUpdateTodo(id, updatedTask) {
+
+    const updatedItem = tasks.map((item) => {
+      return item.id === id ? updatedTask : item;
+    });
+
+    setIsEditing(false);
+    setTasks(updatedItem);
+  }
+  function handleEditClick(item) {
+    // set editing to true
+    setIsEditing(true);
+    // set the currentTodo to the todo item that was clicked
+    setCurrentTodo({ ...item });
+  }
 
   // 検索条件
   const [filterQuery, setFilterQuery] = useState({});
   // ソート条件
   const [sort, setSort] = useState({});
-  const filteredTask = useMemo(() => {
+
+
+  const filteredTask = useMemo(() => { //
     let tmpTasks = tasks;
+
 
     // 入力した文字は小文字にする
     const filterTitle = filterQuery.title && filterQuery.title.toLowerCase();
@@ -111,17 +155,35 @@ export default () => {
     <div className="wrap">
       <div className="filter-box">
         <div className="input-group">
-          <input
-            type="text"
-            name="title"
-            className="form-input"
-            placeholder="タイトル"
-            value={filterQuery.title || ""}
-            onChange={handleFilter}
-          />
-               <form onSubmit={handleSubmit}>
-              <input value={item} placeholder='add new task' onChange={handleNewitem} />
-          </form>
+        <input
+        type="text"
+        name="title"
+        className="form-input"
+        placeholder="ここで検索"
+        value={filterQuery.title || ""}
+        onChange={handleFilter}
+      />[検索]
+
+       {isEditing ? (
+                <form onSubmit={handleEditFormSubmit}>
+                <h2>Edit Todo</h2>
+                <label htmlFor="editTodo">Edit todo: </label>
+                <input
+                  name="editTodo"
+                  type="text"
+                  placeholder="Edit todo"
+                  value={currentTodo.text}
+                  onChange={handleEditInputChange}
+                />
+                <button type="submit">Update</button>
+                <button onClick={() => setIsEditing(false)}>Cancel</button>
+              </form>
+      ):(
+      <form onSubmit={handleSubmit}>
+        <input value={item} placeholder='Enterを押してください' onChange={handleNewitem} />[追加]
+      </form>
+      )}
+
         </div>
         <div className="input-group">
           <div className="selectbox">
@@ -130,7 +192,7 @@ export default () => {
               value={filterQuery.category_id}
               onChange={handleFilter}
             >
-              <option value="">カテゴリー選択</option>
+              <option value="">全て表示</option>
               {categories.map((item) => {
                 return (
                   <option key={item.id} value={item.id}>
@@ -146,9 +208,9 @@ export default () => {
       <table>
         <thead>
           <tr>
-            <th onClick={() => handleSort("id")}>ID</th>
-            <th>タイトル</th>
-            <th onClick={() => handleSort("category")}>カテゴリー</th>
+          <th>SORT::</th>
+            <th onClick={() => handleSort("id")}>[ID]</th>
+            <th onClick={() => handleSort("category")}>[カテゴリー]</th>
           </tr>
         </thead>
 
@@ -158,12 +220,13 @@ export default () => {
             return (
               <tr key={task.id}>
                 <td>{task.title}</td>
-                <td><button onClick={()=> handleRemoveItem(index)}>削除</button></td>
-                <td>
+                <td><span onClick={()=>handleStateIncrease(index)} >
                   {task.category
                     ? categories.find((c) => c.id === task.category).title
-                    : ""}
+                    : ""}</span>
                 </td>
+                <td><button onClick={() => handleEditClick(item)}>Edit</button></td>
+                <td><button onClick={()=> handleRemoveItem(index)}>削除</button></td>
               </tr>
             );
           })}
@@ -172,3 +235,5 @@ export default () => {
     </div>
   );
 };
+
+
