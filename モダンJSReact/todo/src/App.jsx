@@ -7,21 +7,14 @@ import { CompleteTodos } from './components/CompleteTodos';
 
 
 export const App = () => {
-  // const appState = localStorage.getItem('appWithRedux')
-  // const initalState = appState ? JSON.parse(appState) : {
-  //   events: [],
-  //   operationLogs:[]
-  // }
-  // const [state, dispatch] = useReducer(reducer, initalState)
+
   const [todoText, setTodoText] = useState('');
   const [incompleteTodos, setIncompleteTodos] =useState([]);
   const [completeTodos, setCompleteTodos] = useState([]);
 
   const onChangeTodoText = (event) => setTodoText(event.target.value);
 
-  // useEffect(() => {
-  //   localStorage.setItem('appWithRedux',JSON.stringify(state))
-  // },[state])
+
 
   const onClickAdd = () => {
     if(todoText === '') return;

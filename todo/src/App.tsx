@@ -1,8 +1,9 @@
 import { waitForElementToBeRemoved } from '@testing-library/react';
 import React,{useState, useEffect} from 'react';
 import ReactDOM from 'react-dom';
-
+import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import './App.css';
+import { getAllJSDocTagsOfKind } from 'typescript';
 
 interface Todo {
   value: string;
@@ -124,6 +125,14 @@ const App:React.VFC =()=> {
     setTodos(newTodos);
   }
 
+  const handleOnDragEnd=(result: any)=>{
+    const items = Array.from(todos);
+    const [reordererdItem] = items.splice(result.source.index,1);
+    items.splice(result.detination.index, 0,reordererdItem);
+
+    setTodos(items)
+  }
+
 
   return (
     <div className="App">
@@ -159,30 +168,53 @@ const App:React.VFC =()=> {
       </form>
       )}
 
-      <ul>
-        {todos.map((todo) => {
+      
+      <DragDropContext onDragEnd={handleOnDragEnd}>
+        <Droppable droppableId='todo-list'>
+        {(provided) => (
+        <ul className='todo-list' {...provided.droppableProps} ref={provided.innerRef}>
+          {todos.map(({id,value,checked,removed }, todo) => {
           return (
-            <li key={todo.id}>
-              <input
-              type='checkbox'
-              disabled={todo.removed}
-              checked={todo.checked}
-              onChange={() => handleOnCheck(todo.id, todo.checked)}
-              />
-              <input 
-              type='text'
-              disabled={todo.checked || todo.removed}
-              value={todo.value}
-              onChange={(e) => handleOnEdit(todo.id, e.target.value)}
-              />
-              <button 
-              onClick={() => handleOnRemove(todo.id, todo.removed)}>{todo.removed ? '復元' : '削除'}
-              </button>
-            </li>
+            <Draggable key={todo} draggableId={checked} index={todo}>
+            
+                          <li 
+                          key={todo}
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          >
+                            <input
+                            type='checkbox'
+                            disabled={todo.removed}
+                            checked={todo.checked}
+                            onChange={() => handleOnCheck(todo.id, todo.checked)}
+                            />
+                            <input 
+                            type='text'
+                            disabled={todo.checked || todo.removed}
+                            value={todo.value}
+                            onChange={(e) => handleOnEdit(todo.id, e.target.value)}
+                            />
+                            <button 
+                            onClick={() => handleOnRemove(todo.id, todo.removed)}>{todo.removed ? '復元' : '削除'}
+                            </button>
+                          </li>
+            </Draggable>
+            )}
+            
+            
+            
           ) 
-        })}
-      </ul>
+          
+        })}   
+          </ul>
+        
+        </Droppable>
+      </DragDropContext>
+
+      
     </div>
+    
   );
 }
 

@@ -1,0 +1,30 @@
+.env
+REACT_APP_FIREBASE_APIKEY="AIzaSyAa-5IeKrn3WnkpvfNj7-6hF7Gib9uiOsE"
+REACT_APP_FIREBASE_DOMAIN="udemy-todo-7ab18.firebaseapp.com"
+REACT_APP_FIREBASE_DATABASE='https://udemy-todo-7ab18.firebaseio.com'
+REACT_APP_FIREBASE_PROJECT_ID='udemy-todo-7ab18'
+REACT_APP_FIREBASE_STORAGE_BUCKET="udemy-todo-7ab18.appspot.com"
+REACT_APP_FIREBASE_SENDER_ID="183916126131"
+REACT_APP_FIREBASE_APP_ID="1:183916126131:web:584844a25f0a56534a35c6"
+REACT_APP_FIREBASE_MEASUREMENTID="G-TWQS1Y4RJ2"
+
+
+firebase.ts
+import firebase from 'firebase/app';
+import 'firebase/compat/app';
+import 'firebase/compat/firestore';
+import 'firebase/compat/auth'; 
+
+
+const firebaseConfig = firebase.initializeApp({
+  apiKey: process.env.REACT_APP_FIREBASE_APIKEY,
+  authDomain: process.env.REACT_APP_FIREBASE_DOMAIN,
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_FIREBASE_SENDER_ID,
+  appId: process.env.REACT_APP_FIREBASE_APP_ID,
+  measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENTID
+});
+
+export const db = firebaseConfig.firestore();
+export const auth = firebase.auth();
