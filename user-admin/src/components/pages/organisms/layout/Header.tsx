@@ -13,6 +13,7 @@ export const Header: VFC = memo(() => {
   const onClickHome = useCallback(() => history.push("/home"),[]);
   const onClickUserManagement = useCallback(() => history.push("/home/user_management"),[]);
   const onClickSetting = useCallback(() => history.push("/home/setting"),[]);
+  const onClickGame = useCallback(() => history.push("/home/game"),[])
 
   return (
     <>
@@ -44,6 +45,7 @@ export const Header: VFC = memo(() => {
         onClickHome={onClickHome}
         onClickUserManagement={onClickUserManagement}
         onClickSetting={onClickSetting}
+        onClickGame={onClickGame}
       />
     </>
   )
