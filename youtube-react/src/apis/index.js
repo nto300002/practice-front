@@ -41,4 +41,4 @@ export const fetchRelatedData = async (id) => {
   })
 }
 
-axios.defaults.fetchSelectedData = true;
+axios.defaults.withCredentials = true;
